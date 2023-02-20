@@ -36,44 +36,22 @@ function getAddress(userId, callback) {
   }, 2000);
 }
 
-const promiseUser = getUser();
+main();
+async function main() {
+  try {
+    const user = await getUser();
+    const result = await Promise.all([
+      getPhone(user.id),
+      getAddressAsync(user.id)
+    ]);
+    const { [0]: phone, [1]: address } = result;
 
-promiseUser
-  .then(function userResolve(result) {
-    return {
-      user: {
-        id: result.id,
-        name: result.name
-      }
-    };
-  })
-  .then(function (data) {
-    const promisePhone = getPhone(data.id);
-
-    return promisePhone.then(function phoneResolve(result) {
-      return {
-        ...data,
-        phone: result
-      };
-    });
-  })
-  .then(function (data) {
-    const addressAsync = getAddressAsync(data.user.id);
-
-    return addressAsync.then(function addressResolve(result) {
-      return {
-        ...data,
-        address: result
-      };
-    });
-  })
-  .then(function (data) {
     console.log(`
-        Name: ${data.user.name}
-        Address: ${data.address.street}, ${data.address.number}
-        Phone: (${data.phone.ddd}) ${data.phone.number}
-      `);
-  })
-  .catch(function (error) {
+      Name: ${user.name}
+      Address: ${address.street}, ${address.number}
+      Phone: (${phone.ddd}) ${phone.number}
+    `);
+  } catch (error) {
     console.error('<ERROR>', error);
-  });
+  }
+}
