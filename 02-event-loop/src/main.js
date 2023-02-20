@@ -1,20 +1,30 @@
-function getUser(callback) {
-  setTimeout(() => {
-    return callback(null, {
-      id: 1,
-      name: 'João Gabriel',
-      dateOfBirth: new Date(2000, 7, 10)
-    });
-  }, 1000);
+const util = require('util');
+
+const getAddressAsync = util.promisify(getAddress);
+
+function getUser() {
+  return new Promise(function promiseResolve(resolve, reject) {
+    setTimeout(() => {
+      // return reject(new Error('User does not exists'));
+
+      return resolve({
+        id: 1,
+        name: 'João Gabriel',
+        dateOfBirth: new Date(2000, 7, 10)
+      });
+    }, 1000);
+  });
 }
 
-function getPhone(userId, callback) {
-  setTimeout(() => {
-    return callback(null, {
-      number: '123123',
-      ddd: '31'
-    });
-  }, 2000);
+function getPhone(userId) {
+  return new Promise(function promiseResolve(resolve, reject) {
+    setTimeout(() => {
+      resolve({
+        number: '123123',
+        ddd: '31'
+      });
+    }, 2000);
+  });
 }
 
 function getAddress(userId, callback) {
@@ -26,29 +36,44 @@ function getAddress(userId, callback) {
   }, 2000);
 }
 
-getUser(function userResolve(error, user) {
-  if (error) {
-    console.error('<ERROR> user', error);
-    return;
-  }
+const promiseUser = getUser();
 
-  getPhone(user.id, function phoneResolve(error1, phone) {
-    if (error1) {
-      console.error('<ERROR> phone', error1);
-      return;
-    }
-
-    getAddress(user.id, function address(error2, address) {
-      if (error2) {
-        console.error('<ERROR> address', error2);
-        return;
+promiseUser
+  .then(function userResolve(result) {
+    return {
+      user: {
+        id: result.id,
+        name: result.name
       }
+    };
+  })
+  .then(function (data) {
+    const promisePhone = getPhone(data.id);
 
-      console.log(`
-        Name: ${user.name}
-        Address: ${address.street},${address.number}
-        Phone: (${phone.ddd}) ${phone.number}
-      `);
+    return promisePhone.then(function phoneResolve(result) {
+      return {
+        ...data,
+        phone: result
+      };
     });
+  })
+  .then(function (data) {
+    const addressAsync = getAddressAsync(data.user.id);
+
+    return addressAsync.then(function addressResolve(result) {
+      return {
+        ...data,
+        address: result
+      };
+    });
+  })
+  .then(function (data) {
+    console.log(`
+        Name: ${data.user.name}
+        Address: ${data.address.street}, ${data.address.number}
+        Phone: (${data.phone.ddd}) ${data.phone.number}
+      `);
+  })
+  .catch(function (error) {
+    console.error('<ERROR>', error);
   });
-});
