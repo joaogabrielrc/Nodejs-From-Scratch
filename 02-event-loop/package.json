@@ -1,0 +1,9 @@
+{
+  "name": "02-event-loop",
+  "version": "1.0.0",
+  "description": "Class 02",
+  "scripts": {
+    "dev": "node src/main.js"
+  },
+  "author": "@joaogabrielrc"
+}
