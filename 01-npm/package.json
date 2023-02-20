@@ -1,0 +1,10 @@
+{
+  "name": "01-npm",
+  "version": "1.0.0",
+  "description": "Class 01",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "node ."
+  },
+  "author": "@joaogabrielrc"
+}
