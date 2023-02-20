@@ -5,13 +5,8 @@ class MyEmitter extends EventEmitter {}
 const myEmitter = new MyEmitter();
 const eventName = 'user:click';
 
-myEmitter.on(eventName, click => {
-  console.log('A user clicked', click);
+const stdin = process.openStdin();
+
+stdin.addListener('data', value => {
+  console.log(`You typed: ${value.toString().trim()}\n`);
 });
-
-myEmitter.emit(eventName, 'on the scroll bar');
-
-let count = 1;
-setInterval(() => {
-  myEmitter.emit(eventName, `on the submit button ${count++}`);
-}, 1000);
