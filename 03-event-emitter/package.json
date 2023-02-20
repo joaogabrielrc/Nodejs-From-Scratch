@@ -1,0 +1,9 @@
+{
+  "name": "03-event-emitter",
+  "version": "1.0.0",
+  "description": "Class 03",
+  "scripts": {
+    "dev": "node src/main.js"
+  },
+  "author": "@joaogabrielrc"
+}
